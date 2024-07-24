@@ -104,7 +104,7 @@ def encrypt_and_manipulate_tokenizer(
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
     special_tokens = tokenizer.special_tokens_map
-    if "t5" in model_name_or_path:
+    if "t5" in model_name_or_path or "xlnet" in model_name_or_path:
         special_token_ids = {}
         for tok in special_tokens.values():
             if isinstance(tok, list):
@@ -201,6 +201,10 @@ def encrypt_and_manipulate_base_model(
             torch.tensor(token_embedding_weights))
         model.encoder.embed_tokens.weight = torch.nn.Parameter(
             torch.tensor(token_embedding_weights))
+    elif "xlnet" in model_name_or_path:
+        model.word_embedding.weight = torch.nn.Parameter(
+            torch.tensor(token_embedding_weights)
+        )
     else:
         model.embeddings.word_embeddings.weight = torch.nn.Parameter(
             torch.tensor(token_embedding_weights)
